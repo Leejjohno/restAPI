@@ -13,8 +13,8 @@ exports.hashPassword = async (req, res, next) => {
 
 exports.unHash = async (req, res, next) => {
     try {
-        req.user = await User.findOne({ username: req.body.username });
-        const result = await bcrypt.compare(req.body.password, req.user.password);
+        const user = await User.findOne({ username: req.body.username });
+        const result = await bcrypt.compare(req.body.password, user.password);
         if (result) {
             next()
         } else {
