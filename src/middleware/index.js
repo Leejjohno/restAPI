@@ -8,6 +8,7 @@ exports.hashPassword = async (req, res, next) => {
         next();
     } catch (error) {
         console.log(error);
+        res.send({error: error.code})
     }
 };
 
@@ -28,9 +29,11 @@ exports.unHash = async (req, res, next) => {
 
 exports.tokenCheck = async (req, res, next) => {
     try {
-        const token = req.header("Authorisation");
+        const token = req.header("Authorization");
+        console.log(token);
         const decodedToken = jwt.verify(token, process.env.SECRET);
         req.user = await User.findById(decodedToken.id);
+        console.log(decodedToken);
         next();
     } catch (error) {
         console.log(error);

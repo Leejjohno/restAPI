@@ -1,4 +1,4 @@
-// const jwt = require("jsonwebtoken");
+const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const User = require("./model");
 
@@ -12,9 +12,9 @@ exports.createUser = async (req, res) => {
         };
         console.log("User Object Hit: ", userObj)
         const newUser = await User.create(userObj);
-        // const token = await jwt.sign( { id: newUser._id }, process.env.SECRET );
+        const token = await jwt.sign( { id: newUser._id }, process.env.SECRET );
         console.log(token);
-        console.log("NewUser: ", newUser)
+        console.log("NewUser: ", newUser);
         res.send({ newUser, token });
     } catch (error) {
         console.log(error);
@@ -40,6 +40,7 @@ exports.getUser = async (req, res) => {
         };
         const user = await User.findOne(userObj)
         console.log(user)
+        console.log(t)
         res.send( user )
     } catch (error) {
         console.log(error);
@@ -81,6 +82,10 @@ exports.login = async (req, res) => {
         console.log(passCheck);
         if (passCheck) {
             res.send("user has logged in")
+            const token = await jwt.sign( { id: returnUser._id }, process.env.SECRET );
+            console.log(token);
+            console.log("returning user: ", returnUser);
+            res.send({ returnUser, token });
         } else {
             res.send("incorrect password")
         }
@@ -89,18 +94,18 @@ exports.login = async (req, res) => {
     }
 }
 
-// exports.tokenLogin = async (req, res) => {
-//     const token = await jwt.sign({ id: req.user._id }, process.env.SECRET);
-//     res.send({ user: req.user, token });
-// };
+exports.tokenLogin = async (req, res) => {
+    const token = await jwt.sign({ id: req.user._id }, process.env.SECRET);
+    res.send({ user: req.user, token });
+};
 
-// update username doesn't seem to work, it always goes back to update email
+// update username doesn't seem to work, it finds a match but doesn't do anything with it
 
 exports.updateUsername = async (req, res) => {
     try {
-        const user = await User.updateOne( { where: { username: req.body.username }}, { update: { username: req.body.updateUsername }});
+        const user = await User.updateOne( { username: req.body.username }, { username: req.body.updateUsername });
         console.log(user)
-        res.send(user.username)
+        res.send(user)
     } catch (error) {
         console.log(error)
         res.send({ error: error.code })
