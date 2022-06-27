@@ -12,8 +12,9 @@ exports.createUser = async (req, res) => {
         };
         console.log("User Object Hit: ", userObj)
         const newUser = await User.create(userObj);
+        console.log("!!!!!", newUser)
         const token = await jwt.sign( { id: newUser._id }, process.env.SECRET );
-        console.log(token);
+        console.log("Token: ", token);
         console.log("NewUser: ", newUser);
         res.send({ newUser, token });
     } catch (error) {
@@ -39,8 +40,7 @@ exports.getUser = async (req, res) => {
             username: req.body.username
         };
         const user = await User.findOne(userObj)
-        console.log(user)
-        console.log(t)
+        console.log( user )
         res.send( user )
     } catch (error) {
         console.log(error);
@@ -76,21 +76,19 @@ exports.updateEmail = async (req, res) => {
 
 exports.login = async (req, res) => {
     try {
-        const user = await User.findOne({ where: { username: req.body.username }})
-        console.log(user);
-        const passCheck = await bcrypt.compare(req.body.password, user.password);
+        console.log("Login hit")
+        const returnUser = await User.findOne( { username: req.body.username } ) // change to `{ where: { username: req.body.username } }` for Thunder Client
+        console.log(returnUser);
+        const passCheck = await bcrypt.compare(req.body.password, returnUser.password);
         console.log(passCheck);
-        if (passCheck) {
-            res.send("user has logged in")
-            const token = await jwt.sign( { id: returnUser._id }, process.env.SECRET );
-            console.log(token);
-            console.log("returning user: ", returnUser);
-            res.send({ returnUser, token });
+        if (returnUser && passCheck) {
+            return res.send({ returnUser });
         } else {
-            res.send("incorrect password")
+            res.send("incorrect password");
         }
     } catch (error) {
         console.log(error);
+        res.send({ error: error.code })
     }
 }
 

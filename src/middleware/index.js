@@ -3,8 +3,10 @@ const jwt = require("jsonwebtoken");
 const User = require("../user/model");
 
 exports.hashPassword = async (req, res, next) => {
+    console.log(req.body)
     try {
         req.body.password = await bcrypt.hash(req.body.password, 8); // take the valid password then uses bcrypt to hash. The hash number is 8
+        console.log(req.body);
         next();
     } catch (error) {
         console.log(error);
@@ -34,6 +36,11 @@ exports.tokenCheck = async (req, res, next) => {
         const decodedToken = jwt.verify(token, process.env.SECRET);
         req.user = await User.findById(decodedToken.id);
         console.log(decodedToken);
+        if (decodedToken.id) {
+            next();
+        } else {
+           throw new Error("Token match error") 
+        }
         next();
     } catch (error) {
         console.log(error);
