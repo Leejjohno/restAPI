@@ -2,7 +2,7 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const User = require("./model");
 
-exports.createUser = async (req, res) => {
+exports.createUser = async (req, res, next) => {
     console.log("Create User Hit")
     try {
         const userObj = {
@@ -23,7 +23,7 @@ exports.createUser = async (req, res) => {
     }
 };
 
-exports.getAllUsers = async (req, res) => {
+exports.getAllUsers = async (req, res, next) => {
     try {
         const users = await User.find()
         // console.log(users)
@@ -34,7 +34,7 @@ exports.getAllUsers = async (req, res) => {
     }
 };
 
-exports.getUser = async (req, res) => {
+exports.getUser = async (req, res, next) => {
     try {
         const userObj = {
             username: req.body.username
@@ -48,7 +48,7 @@ exports.getUser = async (req, res) => {
     }
 };
 
-exports.deleteUser = async (req, res) => {
+exports.deleteUser = async (req, res, next) => {
     try {
         const userObj = {
             username: req.body.username
@@ -69,14 +69,14 @@ exports.updateUser = async (req, res, next) => {
         console.log(user)
         if (req.body.password)  user.password = req.body.password;
         if (req.body.email)     user.email = req.body.email; 
-        if (req.body.full_name) user.full_name = req.body.username;
+        if (req.body.username) user.full_name = req.body.username;
     } catch (error) {
         console.log(error)
         res.send({ error: error.code })
     };
 };
 
-exports.login = async (req, res) => {
+exports.login = async (req, res, next) => {
     try {
         console.log("Login hit")
         const returnUser = await User.findOne( { username: req.body.username } ) // change to `{ where: { username: req.body.username } }` for Thunder Client
@@ -94,7 +94,7 @@ exports.login = async (req, res) => {
     }
 }
 
-exports.tokenLogin = async (req, res) => {
+exports.tokenLogin = async (req, res, next) => {
     const token = await jwt.sign({ id: req.user._id }, process.env.SECRET);
     res.send({ user: req.user, token });
 };
