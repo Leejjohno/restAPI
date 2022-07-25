@@ -8,7 +8,7 @@ userRouter.get("/user", getAllUsers);
 userRouter.get("/user/:username", getUser); 
 userRouter.post("/login", login); //removed tokenCheck from here for login testing
 userRouter.delete("/user/:username", deleteUser);
-userRouter.put("/user/:email", updateEmail);
-userRouter.put("/user/:username", updateUsername);
+userRouter.put("/user/:account", updateUser);
+// userRouter.put("/user/:username", updateUsername);
 
 module.exports = userRouter;

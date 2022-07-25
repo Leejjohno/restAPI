@@ -31,11 +31,9 @@ exports.unHash = async (req, res, next) => {
 
 exports.tokenCheck = async (req, res, next) => {
     try {
-        const token = req.header("Authorization");
-        console.log(token);
-        const decodedToken = jwt.verify(token, process.env.SECRET);
-        req.user = await User.findById(decodedToken.id);
-        console.log(decodedToken);
+        const token = req.headers.authorization;
+        const { decodedToken } = jwt.verify(token, process.env.SECRET);
+        req.user = await User.findById(decodedToken);
         if (decodedToken.id) {
             next();
         } else {
