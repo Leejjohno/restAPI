@@ -63,11 +63,13 @@ exports.deleteUser = async (req, res) => {
     }
 };
 
-exports.updateEmail = async (req, res) => {
+exports.updateUser = async (req, res, next) => {
     try {
-        const user = await User.updateOne({ username: req.body.username }, { email: req.body.email });
+        const user = await User.findById(req.user._id);
         console.log(user)
-        res.send(user.email)
+        if (req.body.password)  user.password = req.body.password;
+        if (req.body.email)     user.email = req.body.email; 
+        if (req.body.full_name) user.full_name = req.body.username;
     } catch (error) {
         console.log(error)
         res.send({ error: error.code })
@@ -98,15 +100,15 @@ exports.tokenLogin = async (req, res) => {
 };
 
 // update username doesn't seem to work, it finds a match but doesn't do anything with it
-
-exports.updateUsername = async (req, res) => {
-    try {
-        const user = await User.updateOne( { username: req.body.username }, { username: req.body.updateUsername });
+// we don't need this if we simply have an update splash for all user needs
+// exports.updateUsername = async (req, res) => {
+//     try {
+/*        const user = await User.updateOne( { username: req.body.username }, { username: req.body.updateUsername });
         console.log(user)
         res.send(user)
     } catch (error) {
         console.log(error)
         res.send({ error: error.code })
-    };
+    }; 
 }
-
+*/
